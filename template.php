@@ -10,14 +10,14 @@
 		* @lastmodified    16.06.2016
 		*/
 
-		/*	-- 
+		/*	--
 		***	Pixels => Points
 		*	6px => 5pt			*	11px => 8pt			*	16px => 12pt		*	21px => 16pt
 		*	7px => 5pt			*	12px => 9pt			*	17px => 13pt		*	22px => 17pt
 		*	8px => 6pt			*	13px => 10pt		*	18px => 14pt		*	23px => 17pt
 		*	9px => 7pt			*	14px => 11pt		*	19px => 14pt		*	24px => 18pt
-		*	10px => 8pt			*	15px => 11pt		*	20px => 15pt		
-		***	
+		*	10px => 8pt			*	15px => 11pt		*	20px => 15pt
+		***
 		--	*/
 
 		@media screen {
@@ -32,7 +32,7 @@
 		}
 
 		@media print {
-			
+
 			/** Setting Page size and margins */
 			@page {
 				size: A4;
@@ -57,7 +57,7 @@
 				font-size: 14pt;
 				margin-top: 25px;
 			}
-			 
+
 			/* Defining all page breaks */
 			a {
 				page-break-inside:avoid
@@ -65,14 +65,14 @@
 			blockquote {
 				page-break-inside: avoid;
 			}
-			h1, h2, h3, 
-			h4, h5, h6 { page-break-after:avoid; 
+			h1, h2, h3,
+			h4, h5, h6 { page-break-after:avoid;
 				page-break-inside:avoid; }
-			img { page-break-inside:avoid; 
+			img { page-break-inside:avoid;
 				page-break-after:avoid; }
 			table, pre { page-break-inside:avoid; }
 			ul, ol, dl  { page-break-before:avoid; }
-			
+
 			/* Displaying link color and link behaviour */
 			a:link, a:visited, a {
 				background: transparent;
@@ -103,7 +103,7 @@
 			}
 
 
-			/* Define Important Elements */    
+			/* Define Important Elements */
 			p, address, li, dt, dd, blockquote {
 				font-size: 100%;
 			}
@@ -112,9 +112,9 @@
 			code, pre { font-family: "Courier New", Courier, mono}
 
 			ul, ol {
-				list-style: square; 
+				list-style: square;
 				margin-left: 18pt;
-				margin-bottom: 20pt;    
+				margin-bottom: 20pt;
 			}
 
 			li {
@@ -134,17 +134,18 @@
 </head>
 <body>
 
-	<?php
-		$unit_number = 201;
-		$area = 2400;
-		$rate_per_sqft = 3900;
-		$total = 9360000;
-	?>
 	<div class="page">
 		<h1>Unit Number: <?php echo $unit_number; ?></h1>
-		<h2>Area: <?php echo $area; ?> SQFT</h2>
+		<h4>Name: <?php echo $name; ?></h4>
+		<h4>Phone: <?php echo $phone; ?></h4>
+		<h4>Email: <?php echo $email; ?></h4>
+		<h2>Built-up Area: <?php echo $built_up_area; ?> SQFT</h2>
+		<h4>Floor: <?php echo $floor; ?></h4>
+		<h4>Block: <?php echo $block; ?></h4>
 		<h2>Rate/SQFT: ₹<?php echo $rate_per_sqft; ?></h2>
-		<h2>Total: ₹<?php echo $total; ?></h2>
+		<h2>Basic Cost: ₹<?php echo $basic_cost; ?></h2>
+		<h2>Floor Rise: ₹<?php echo $floor_rise; ?></h2>
+		<h1>Grand Total: ₹<?php echo $grand_total; ?></h1>
 		<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 	</div>
 	<div class="page-break"></div>
