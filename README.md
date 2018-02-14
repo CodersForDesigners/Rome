@@ -23,6 +23,12 @@
 
 
 
+# How to navigate this project
+## Tests
+This folder contains scripts that test / validate assumptions.
+- `concurrentWritesAndReadsToAGoogleSheet.php` aims to determine if concurrent requests to a Google Sheet leads to incorrect / invalid data being returned.
+
+
 
 
 # What's in the name
