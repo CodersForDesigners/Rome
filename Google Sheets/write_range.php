@@ -3,9 +3,13 @@
 ini_set( 'display_errors', 'On' );
 ini_set( 'error_reporting', E_ALL );
 
-require_once __DIR__ . '/../vendor/autoload.php';
-
 date_default_timezone_set( 'Asia/Kolkata' );
+
+
+require_once __DIR__ . '/../vendor/autoload.php';
+// functions to setup the Google API Client
+require_once '../Google Sheets/lib.php';
+
 
 function logo ( $thing ) {
 	echo '<pre style="white-space: pre-wrap">';
@@ -13,10 +17,17 @@ function logo ( $thing ) {
 	echo '</pre>';
 }
 
-define( 'SPREADSHEET_ID', '1LupSf0NLpR4Qtw-Nwpok0NCR7BcZWGME1AjOxPf1WGU' );
-define( 'SHEET_RANGE', 'calculations!I2' );
+
+
+
+
+/* -----
+ * Declaring the data and places on the spreadsheet that are going to be accessed
+ ----- */
+define( 'SPREADSHEET_ID', $_GET[ 'spreadsheetId' ] ?? '1LupSf0NLpR4Qtw-Nwpok0NCR7BcZWGME1AjOxPf1WGU' );
+define( 'WRITE_RANGE', $_GET[ 'writeRange' ] ?? 'calculations!I2' );
 $requestBody = new Google_Service_Sheets_ValueRange( [
-	'range' => SHEET_RANGE,
+	'range' => WRITE_RANGE,
 	'majorDimension' => 'ROWS',
 	'values' => [ 'values' => 'A21' ]
 ] );
@@ -33,61 +44,7 @@ define( 'SCOPES', implode( ' ', [ Google_Service_Sheets::SPREADSHEETS ] ) );
 	// throw new Exception('This application must be run on the command line.');
 // }
 
-/**
- * Returns an authorized API client.
- * @return Google_Client the authorized client object
- */
-function getClient () {
-	$client = new Google_Client();
-	$client->setApplicationName( APPLICATION_NAME );
-	$client->setScopes( SCOPES );
-	$client->setAuthConfig( CLIENT_SECRET_PATH );
-	$client->setAccessType( 'offline' );
 
-	// Load previously authorized credentials from a file.
-	$credentialsPath = expandHomeDirectory( CREDENTIALS_PATH );
-	if ( file_exists( $credentialsPath ) ) {
-		$accessToken = json_decode( file_get_contents( $credentialsPath ), true );
-	} else {
-		// Request authorization from the user.
-		$authUrl = $client->createAuthUrl();
-		printf( "Open the following link in your browser:\n%s\n", $authUrl );
-		print 'Enter verification code: ';
-		$authCode = trim( fgets( STDIN ) );
-
-		// Exchange authorization code for an access token.
-		$accessToken = $client->fetchAccessTokenWithAuthCode( $authCode );
-
-		// Store the credentials to disk.
-		if ( ! file_exists( dirname( $credentialsPath ) ) ) {
-			mkdir( dirname( $credentialsPath ), 0700, true );
-		}
-		file_put_contents( $credentialsPath, json_encode( $accessToken ) );
-		printf( "Credentials saved to %s\n", $credentialsPath );
-	}
-
-	$client->setAccessToken( $accessToken );
-
-	// Refresh the token if it's expired.
-	if ( $client->isAccessTokenExpired() ) {
-		$client->fetchAccessTokenWithRefreshToken( $client->getRefreshToken() );
-		file_put_contents( $credentialsPath, json_encode( $client->getAccessToken() ) );
-	}
-	return $client;
-}
-
-/**
- * Expands the home directory alias '~' to the full path.
- * @param string $path the path to expand.
- * @return string the expanded path.
- */
-function expandHomeDirectory ( $path ) {
-	$homeDirectory = getenv( 'HOME' );
-	if ( empty( $homeDirectory ) ) {
-		$homeDirectory = getenv( 'HOMEDRIVE' ) . getenv( 'HOMEPATH' );
-	}
-	return str_replace( '~', realpath( $homeDirectory ), $path );
-}
 
 // Get the API client and construct the service object.
 $client = getClient();
@@ -97,7 +54,7 @@ $service = new Google_Service_Sheets( $client );
 // $range = 'Sheet1!A1:J';
 $response = $service->spreadsheets_values->update(
 	SPREADSHEET_ID,
-	SHEET_RANGE,
+	WRITE_RANGE,
 	$requestBody,
 	[
 		'valueInputOption' => 'USER_ENTERED'
