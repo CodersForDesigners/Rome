@@ -1,18 +1,28 @@
 <?php
 
+require_once __DIR__ . '/../vendor/autoload.php';
+
 /**
  * Returns an authorized API client.
  * @return Google_Client the authorized client object
  */
-function getClient () {
+function getClient (
+	$app = 'This is a Test',
+	$credentialsPath = '~/.credentials/sheets.googleapis.com-php-quickstart.json',
+	$clientSecretPath = 'client_secret.json',
+	$scopes = [ Google_Service_Sheets::SPREADSHEETS ]
+) {
+
+	$scopeString = implode( ' ', $scopes );
+
 	$client = new Google_Client();
-	$client->setApplicationName( APPLICATION_NAME );
-	$client->setScopes( SCOPES );
-	$client->setAuthConfig( CLIENT_SECRET_PATH );
+	$client->setApplicationName( $app );
+	$client->setScopes( $scopeString );
+	$client->setAuthConfig( $clientSecretPath );
 	$client->setAccessType( 'offline' );
 
 	// Load previously authorized credentials from a file.
-	$credentialsPath = expandHomeDirectory( CREDENTIALS_PATH );
+	$credentialsPath = expandHomeDirectory( $credentialsPath );
 	if ( file_exists( $credentialsPath ) ) {
 		$accessToken = json_decode( file_get_contents( $credentialsPath ), true );
 	} else {

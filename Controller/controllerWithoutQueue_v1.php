@@ -1,5 +1,15 @@
 <?php
 
+/*
+ *
+ * This script,
+ * 1. Writes onto a cell on the `input` sheet.
+ * 2. Reads a cell range off the `output` sheet.
+ * 3. Pipes the output data into a template.
+ * 4. Generates a PDF off of the built template.
+ *
+ */
+
 ini_set( 'display_errors', 'On' );
 ini_set( 'error_reporting', E_ALL );
 
@@ -36,41 +46,34 @@ function require_to_var ( $__file__, $ctx = [ ] ) {
 /* -----
  * Declaring the data and places on the spreadsheet that are going to be accessed
  ----- */
-
-define( 'APPLICATION_NAME', 'This is a Test' );
-define( 'CREDENTIALS_PATH', '~/.credentials/sheets.googleapis.com-php-quickstart.json' );
-define( 'CLIENT_SECRET_PATH', __DIR__ . '/client_secret.json' );
-// If modifying these scopes, delete your previously saved credentials
-// at ~/.credentials/sheets.googleapis.com-php-quickstart.json
-define( 'SCOPES', implode( ' ', [ Google_Service_Sheets::SPREADSHEETS ] ) );
-define( 'SPREADSHEET_ID', $_GET[ 'spreadsheetId' ] ?? '1LupSf0NLpR4Qtw-Nwpok0NCR7BcZWGME1AjOxPf1WGU' );
+$spreadsheetId = $_GET[ 'spreadsheetId' ] ?? '1LupSf0NLpR4Qtw-Nwpok0NCR7BcZWGME1AjOxPf1WGU';
 
 // write declarations
-define( 'WRITE_RANGE', $_GET[ 'writeRange' ] ?? 'input!B1' );
+$writeRange = $_GET[ 'writeRange' ] ?? 'input!B1';
 // these values should match what is on the sheet
 $possibleInputCellValues = [ 'A11', 'A19', 'B25', 'B59', 'C15', 'C09', 'D27', 'D41', 'E69', 'E55' ];
 $writeRangeValue = $_GET[ 'rangeValues' ] ?? $possibleInputCellValues[ rand( 0, sizeof( $possibleInputCellValues ) - 1 ) ];
-define( 'RANGE_VALUES', [ 'values' => $writeRangeValue ] );
+$rangeValues = [ 'values' => $writeRangeValue ];
 $inputValueRange = new Google_Service_Sheets_ValueRange( [
-	'range' => WRITE_RANGE,
+	'range' => $writeRange,
 	'majorDimension' => 'ROWS',
-	'values' => RANGE_VALUES
+	'values' => $rangeValues
 ] );
 
 // read declarations
-define( 'READ_RANGE', $_GET[ 'readRange' ] ?? 'output!A1:B' );
+$readRange = $_GET[ 'readRange' ] ?? 'output!A1:B';
 
 
 // Get the API client and construct the service object.
-$client = getClient();
+$client = getClient( /* you add pass custom values here, see source */ );
 $service = new Google_Service_Sheets( $client );
 
 
 
 // Writing input values to the sheet
 $response = $service->spreadsheets_values->update(
-	SPREADSHEET_ID,
-	WRITE_RANGE,
+	$spreadsheetId,
+	$writeRange,
 	$inputValueRange,
 	[
 		'valueInputOption' => 'USER_ENTERED'
@@ -80,7 +83,7 @@ $response = $service->spreadsheets_values->update(
 
 
 // Reading corresponding output value off the sheet
-$response = $service->spreadsheets_values->get( SPREADSHEET_ID, READ_RANGE );
+$response = $service->spreadsheets_values->get( $spreadsheetId, $readRange );
 $key_value_pairs = $response->getValues();
 
 

@@ -46,15 +46,7 @@ function require_to_var ( $__file__, $ctx = [ ] ) {
 /* -----
  * Declaring the data and places on the spreadsheet that are going to be accessed
  ----- */
-// These are used by the `getClient` function
-define( 'APPLICATION_NAME', 'This is a Test' );
-define( 'CREDENTIALS_PATH', '~/.credentials/sheets.googleapis.com-php-quickstart.json' );
-define( 'CLIENT_SECRET_PATH', __DIR__ . '/client_secret.json' );
-// If modifying these scopes, delete your previously saved credentials
-define( 'SCOPES', implode( ' ', [ Google_Service_Sheets::SPREADSHEETS ] ) );
-
-
-define( 'SPREADSHEET_ID', $_GET[ 'spreadsheetId' ] ?? '1LupSf0NLpR4Qtw-Nwpok0NCR7BcZWGME1AjOxPf1WGU' );
+$spreadsheetId = $_GET[ 'spreadsheetId' ] ?? '1LupSf0NLpR4Qtw-Nwpok0NCR7BcZWGME1AjOxPf1WGU';
 
 // input declarations
 $unitNumbers = [ 'A11', 'A19', 'B25', 'B59', 'C15', 'C09', 'D27', 'D41', 'E69', 'E55' ];
@@ -65,27 +57,34 @@ $names = [ 'woody', 'buzz', 'jessie', 'hamm', 'rex', 'slinky', 'potato head', 'b
 $name = $names[ rand( 0, sizeof( $names ) - 1 ) ];
 $phoneNumber = '9' . rand( 100, 999 ) . rand( 500, 999 ) . rand( 200, 777 );
 $emailAddress = $name . '@' . 'andy.box';
-$inputData = [ $unitNumber, $floor, $discount, $name, $phoneNumber, $emailAddress ];
+$inputData = [
+	'unit_number' => $unitNumber,
+	'floor' => $floor,
+	'discount' => $discount,
+	'name' => $name,
+	'phone' => $phoneNumber,
+	'email' => $emailAddress
+];
 
-define( 'APPEND_RANGE', $_GET[ 'appendRange' ] ?? 'input_v2' );
-define( 'RANGE_VALUES', [ 'values' => $inputData ] );
+$appendRange = $_GET[ 'appendRange' ] ?? 'input_v2';
+$rangeValues = [ 'values' => array_values( $inputData ) ];
 $inputValueRange = new Google_Service_Sheets_ValueRange( [
-	'range' => APPEND_RANGE,
+	'range' => $appendRange,
 	'majorDimension' => 'ROWS',
-	'values' => RANGE_VALUES
+	'values' => $rangeValues
 ] );
 
 
 // Get the API client and construct the service object.
-$client = getClient();
+$client = getClient( /* you add pass custom values here, see source */ );
 $service = new Google_Service_Sheets( $client );
 
 
 
 // Writing input values to the sheet
 $response = $service->spreadsheets_values->append(
-	SPREADSHEET_ID,
-	APPEND_RANGE,
+	$spreadsheetId,
+	$appendRange,
 	$inputValueRange,
 	[
 		'valueInputOption' => 'USER_ENTERED'
@@ -106,7 +105,7 @@ $readRanges = [
 		'output_v2!A' . $correspondingRow . ':L' . $correspondingRow
 	]
 ];
-$response = $service->spreadsheets_values->batchGet( SPREADSHEET_ID, $readRanges );
+$response = $service->spreadsheets_values->batchGet( $spreadsheetId, $readRanges );
 $keys_and_values = array_map( function ( $range ) {
 	return $range->getValues()[ 0 ];
 }, $response->getValueRanges() );
@@ -116,7 +115,7 @@ $keys_and_values = array_map( function ( $range ) {
 // Clear the input row
 $clearRange = 'input_v2!A' . $correspondingRow . ':F' . $correspondingRow;
 $clearRequestBody = new Google_Service_Sheets_ClearValuesRequest();
-$response = $service->spreadsheets_values->clear( SPREADSHEET_ID, $clearRange, $clearRequestBody );
+$response = $service->spreadsheets_values->clear( $spreadsheetId, $clearRange, $clearRequestBody );
 
 
 /* -----
@@ -128,6 +127,9 @@ $response = $service->spreadsheets_values->clear( SPREADSHEET_ID, $clearRange, $
 // 	$template_data[ $pair[ 0 ] ] = $pair[ 1 ];
 // }
 $template_data = array_combine( ...$keys_and_values );
+$template_data[ 'name' ] = $inputData[ 'name' ];
+$template_data[ 'phone' ] = $inputData[ 'phone' ];
+$template_data[ 'email' ] = $inputData[ 'email' ];
 
 // Build template
 $markup = require_to_var( '../PDF Generation/template.php', $template_data );
@@ -139,4 +141,3 @@ $dompdf->loadHtml( $markup );
 $dompdf->render();
 $output_filename = '../o/' . date( 'Y-m-d H.i.s.' ) . microtime() . '.' . rand( 1, 999 ) . '.pdf';
 file_put_contents( $output_filename, $dompdf->output() );
-// $dompdf->stream();

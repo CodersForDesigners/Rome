@@ -48,32 +48,20 @@ function logo ( $thing ) {
 /* -----
  * Declaring the data and places on the spreadsheet that are going to be accessed
  ----- */
-define( 'SPREADSHEET_ID', $_GET[ 'spreadsheetId' ] ?? '1LupSf0NLpR4Qtw-Nwpok0NCR7BcZWGME1AjOxPf1WGU' );
-define( 'WRITE_RANGE', $_GET[ 'writeRange' ] ?? 'calculations!I2' );
-define( 'READ_RANGE', $_GET[ 'readRange' ] ?? 'calculations!J2' );
+$spreadsheetId = $_GET[ 'spreadsheetId' ] ?? '1LupSf0NLpR4Qtw-Nwpok0NCR7BcZWGME1AjOxPf1WGU';
+$writeRange = $_GET[ 'writeRange' ] ?? 'calculations!I2';
+$readRange = $_GET[ 'readRange' ] ?? 'calculations!J2';
 
 // these values should match what is on the sheet
 $possibleInputCellValues = [ 'A11', 'A19', 'B25', 'B59', 'C15', 'C09', 'D27', 'D41', 'E69', 'E55' ];
 $writeRangeValue = $_GET[ 'rangeValues' ] ?? $possibleInputCellValues[ rand( 0, sizeof( $possibleInputCellValues ) - 1 ) ];
 
-define( 'RANGE_VALUES', [ 'values' => $writeRangeValue ] );
+$rangeValues = [ 'values' => $writeRangeValue ];
 $writeRangeRequestBody = new Google_Service_Sheets_ValueRange( [
-	'range' => WRITE_RANGE,
+	'range' => $writeRange,
 	'majorDimension' => 'ROWS',
-	'values' => RANGE_VALUES
+	'values' => $rangeValues
 ] );
-
-define( 'APPLICATION_NAME', 'This is a Test' );
-define( 'CREDENTIALS_PATH', '~/.credentials/sheets.googleapis.com-php-quickstart.json' );
-define( 'CLIENT_SECRET_PATH', __DIR__ . '/Google_API_client_secret.json' );
-// If modifying these scopes, delete your previously saved credentials
-// at ~/.credentials/sheets.googleapis.com-php-quickstart.json
-define( 'SCOPES', implode( ' ', [ Google_Service_Sheets::SPREADSHEETS ] ) );
-
-// only permit this to run from the command line
-// if ( php_sapi_name() != 'cli' ) {
-	// throw new Exception('This application must be run on the command line.');
-// }
 
 // Get the API client and construct the service object.
 $client = getClient();
@@ -83,8 +71,8 @@ $service = new Google_Service_Sheets( $client );
 
 // Writing input value to the sheet
 $response = $service->spreadsheets_values->update(
-	SPREADSHEET_ID,
-	WRITE_RANGE,
+	$spreadsheetId,
+	$writeRange,
 	$writeRangeRequestBody,
 	[
 		'valueInputOption' => 'USER_ENTERED'
@@ -93,7 +81,7 @@ $response = $service->spreadsheets_values->update(
 
 
 // Reading corresponding output value off the sheet
-$response = $service->spreadsheets_values->get( SPREADSHEET_ID, READ_RANGE );
+$response = $service->spreadsheets_values->get( $spreadsheetId, $readRange );
 $values = $response->getValues()[ 0 ][ 0 ];
 
 
@@ -104,7 +92,7 @@ $outputRequestBody = new Google_Service_Sheets_ValueRange( [
 	'values' => [ 'values' => [ $writeRangeValue, $values ] ]
 ] );
 $response = $service->spreadsheets_values->append(
-	SPREADSHEET_ID,
+	$spreadsheetId,
 	'log',
 	$outputRequestBody,
 	[
