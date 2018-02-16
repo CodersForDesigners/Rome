@@ -1,8 +1,12 @@
 
 # Resarch
+# 16/02/2018
+- [ ] Prototype basic write / read interactions through PHP for MySQL
+- [ ] Prototype reading a large range from a Google Sheet and ingesting it into a database
+
 ## 13/02/2018
 - [ ] Figure out SQLite to prevent concurrent access which can lead to queue corruption.
-- [ ] Simulate concurrent requests to the controller w/o any queue infrastructure
+- [x] Simulate concurrent requests to the controller w/o any queue infrastructure
 - [ ] Simulate concurrent requests to the controller w/ a queue infrastructure
 - [ ] Maintain two separate queues for live query data and pdf generation
 - [ ] Build the scheduler to load-balance requests among these two queues
