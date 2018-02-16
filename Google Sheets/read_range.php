@@ -25,7 +25,7 @@ function logo ( $thing ) {
  * Declaring the data and places on the spreadsheet that are going to be accessed
  ----- */
 define( 'SPREADSHEET_ID', $_GET[ 'spreadsheetId' ] ?? '1LupSf0NLpR4Qtw-Nwpok0NCR7BcZWGME1AjOxPf1WGU' );
-define( 'READ_RANGE', $_GET[ 'writeRange' ] ?? 'calculations!A1:J' );
+define( 'READ_RANGE', $_GET[ 'readRange' ] ?? 'calculations!A1:J' );
 
 define( 'APPLICATION_NAME', 'This is a Test' );
 define( 'CREDENTIALS_PATH', '~/.credentials/sheets.googleapis.com-php-quickstart.json' );
@@ -43,8 +43,6 @@ define( 'SCOPES', implode( ' ', [ Google_Service_Sheets::SPREADSHEETS_READONLY ]
 $client = getClient();
 $service = new Google_Service_Sheets( $client );
 
-// $spreadsheetId = '1LupSf0NLpR4Qtw-Nwpok0NCR7BcZWGME1AjOxPf1WGU';
-// $range = 'Sheet1!A1:J';
 $response = $service->spreadsheets_values->get( SPREADSHEET_ID, READ_RANGE );
 $values = $response->getValues();
 
