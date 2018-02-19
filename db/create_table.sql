@@ -1,8 +1,4 @@
 
-CREATE DATABASE IF NOT EXISTS vitalstatistix;
-
-USE vitalstatistix;
-
 CREATE TABLE IF NOT EXISTS huts (
 	-- id INT(9) UNSIGNED AUTO_INCREMENT,
 	unit_number VARCHAR(5) NOT NULL,

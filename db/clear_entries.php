@@ -24,7 +24,8 @@ require_once 'lib.php';
  ----- */
 $connection = getDBConnection();
 // initialize the db in case it don't already exist
-$connection->exec( file_get_contents( 'setup.sql' ) );
+$connection->exec( file_get_contents( 'setup_db.sql' ) );
+$connection->exec( file_get_contents( 'create_table.sql' ) );
 
 
 
