@@ -36,6 +36,24 @@ function getDBConnection ( $parameters = [ ] ) {
 }
 
 /* -----
+ * Remove a collection
+ ----- */
+function removeCollection ( $connection, $collection ) {
+
+	try {
+		$statement = $connection->prepare( 'DROP TABLE IF EXISTS ' . $collection );
+		$statement->execute();
+	}
+	catch ( PDOException $e ) {
+		echo $e->getMessage();
+		return FALSE;
+	}
+
+	return TRUE;
+
+}
+
+/* -----
  * Get entries from a given collection
  ----- */
 function clearEntries ( $connection, $collection ) {
@@ -113,6 +131,42 @@ function addEntry ( $connection, $collection, $entry ) {
 		// echo $e->getMessage();
 		return FALSE;
 	}
+
+	return TRUE;
+
+}
+
+/* -----
+ * Create a collection based on the given data
+ ----- */
+function createCollectionFromData ( $connection, $collection, $dataset ) {
+
+	// Filter out empty rows
+	$dataset = array_values( array_filter( $dataset ) );
+
+	// Derive a schema off the data and create a table from it
+	$columnNames = $dataset[ 0 ];
+	$columnLengths = array_fill( 0, count( $columnNames ), 0 );
+	$dataValues = array_slice( $dataset, 1 );
+
+	foreach (	$dataValues as $row ) {
+		foreach ( $row as $i => $value ) {
+			if ( $columnLengths[ $i ] < strlen( $value ) ) {
+				$columnLengths[ $i ] = strlen( $value );
+			}
+		}
+	}
+	$columns = array_combine( $columnNames, $columnLengths );
+
+	// Construct table create command
+	$columnDeclarations = [ ];
+	foreach ( $columns as $name => $length ) {
+		$columnDeclarations[ ] = "`${name}` VARCHAR(${length})";
+	}
+	$dbCreateTableStatement = 'CREATE TABLE IF NOT EXISTS data ( ' . implode( ', ', $columnDeclarations ) .	' )';
+
+	// Create the table
+	$connection->exec( $dbCreateTableStatement );
 
 	return TRUE;
 
